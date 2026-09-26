@@ -17,7 +17,7 @@ VERIFY_ROLE_ID = 1549371491731120139  # Role ID ที่จะแจกเม�
 LOG_CHANNEL_ID = 1553435066158284920  # Channel ID สำหรับส่ง Log
 
 # ลิงก์ OAuth2 ของคุณ
-OAUTH2_URL = "https://discord.com/oauth2/authorize?client_id=1553436773684744262&response_type=code&redirect_uri=https%3A%2F%2Fv26f7fgs-8080.asse.devtunnels.ms%2F&scope=identify"
+OAUTH2_URL = "https://discord.com/oauth2/authorize?client_id=1553436773684744262&response_type=code&redirect_uri=https%3A%2F%2Fdiscord-vertify.onrender.com&scope=identify"
 
 # ลิงก์รูป GIF ของคุณ
 GIF_URL = "https://cdn.discordapp.com/attachments/1531546035996856410/1531620024312266842/Tumblr_l_694101025772370-1-1-1-2-1-1-1-1-2.gif?ex=6ab8f9cd&is=6ab7a84d&hm=fac12674ffc2a8abaacaec0e461c9c28ab6979524fd16a4ad426b6e9bbfe7bbf&"

@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IDONTKNOW ON TOP</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-image: url('background.gif'); 
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+
+        #particlesCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .container {
+            position: relative;
+            z-index: 3;
+            background: rgba(18, 18, 18, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 40px 30px;
+            width: 90%;
+            max-width: 420px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            overflow: hidden;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .container.pop-anim {
+            transform: scale(1.02);
+        }
+
+        .content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .title {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 25px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        /* วงกลม Loading */
+        .circle-loader {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            margin: 0 auto 25px auto;
+            display: block;
+        }
+
+        .circle-loader svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .circle-loader circle {
+            fill: none;
+            stroke-width: 8;
+            stroke-linecap: round;
+        }
+
+        .circle-bg {
+            stroke: rgba(255, 255, 255, 0.1);
+        }
+
+        .circle-progress {
+            stroke: #ffffff;
+            stroke-dasharray: 364;
+            stroke-dashoffset: 364;
+            transition: stroke-dashoffset 0.1s linear;
+            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8));
+        }
+
+        .percent-inner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 26px;
+            font-weight: 800;
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        /* แถบข้อความ Loading + idontknow */
+        .left-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            padding: 0 5px;
+        }
+
+        .loading-text-outer {
+            font-size: 16px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            letter-spacing: 0.5px;
+        }
+
+        .sub-text {
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: 1px;
+        }
+
+        /* ส่วนสำเร็จ */
+        .success-box {
+            display: none;
+            text-align: center;
+            padding: 10px 0;
+            animation: fadeInScale 0.4s ease forwards;
+        }
+
+        @keyframes fadeInScale {
+            0% { opacity: 0; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .status-success {
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 25px;
+            letter-spacing: 0.5px;
+            text-shadow: 0 0 12px rgba(255, 255, 255, 0.8);
+        }
+
+        .btn-home {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background-color: #5865F2;
+            color: #ffffff;
+            padding: 12px 26px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 18px rgba(88, 101, 242, 0.4);
+        }
+
+        .btn-home:hover {
+            background-color: #4752C4;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 22px rgba(88, 101, 242, 0.6);
+        }
+
+        .discord-icon {
+            width: 20px;
+            height: 20px;
+            fill: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="particlesCanvas"></canvas>
+
+    <div class="container" id="mainContainer">
+        <div class="content">
+            <div class="title" id="pageTitle">Wait For Verify</div>
+
+            <div class="circle-loader" id="circleLoader">
+                <svg viewBox="0 0 128 128">
+                    <circle class="circle-bg" cx="64" cy="64" r="58"></circle>
+                    <circle class="circle-progress" id="progressCircle" cx="64" cy="64" r="58"></circle>
+                </svg>
+                <div class="percent-inner" id="innerPercent">0%</div>
+            </div>
+
+            <div class="left-info" id="leftInfo">
+                <div class="loading-text-outer" id="outerText">Loading 0%</div>
+                <div class="sub-text">idontknow</div>
+            </div>
+
+            <div class="success-box" id="successBox">
+                <div class="status-success">Verify Successful</div>
+                <a href="https://discord.gg/hgPamsRCW5" class="btn-home">
+                    <svg class="discord-icon" viewBox="0 0 127.14 96.36">
+                        <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0, -3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1,105.25,105.25,0,0,0,32.19-16.14c2.64-27.38-4.51-51.11-18.91-72.15ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,45.91,53.87,53,48.8,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,45.91,96.1,53,91,65.69,84.69,65.69Z"/>
+                    </svg>
+                    Back to Discord
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const progressCircle = document.getElementById('progressCircle');
+        const innerPercent = document.getElementById('innerPercent');
+        const outerText = document.getElementById('outerText');
+        const circleLoader = document.getElementById('circleLoader');
+        const leftInfo = document.getElementById('leftInfo');
+        const pageTitle = document.getElementById('pageTitle');
+        const successBox = document.getElementById('successBox');
+        const mainContainer = document.getElementById('mainContainer');
+
+        const canvas = document.getElementById('particlesCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let backgroundStars = [];
+        let burstParticles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            initBackgroundStars();
+        }
+
+        function initBackgroundStars() {
+            backgroundStars = [];
+            const count = Math.floor((canvas.width * canvas.height) / 8000);
+            for (let i = 0; i < count; i++) {
+                backgroundStars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    radius: Math.random() * 1.5 + 0.5,
+                    alpha: Math.random() * 0.7 + 0.2,
+                    speedY: - (Math.random() * 0.3 + 0.1),
+                    twinkleSpeed: Math.random() * 0.02 + 0.005
+                });
+            }
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function createSimpleExplosion() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            for (let i = 0; i < 55; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 5 + 1.5;
+                burstParticles.push({
+                    x: centerX,
+                    y: centerY,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    radius: Math.random() * 2 + 1,
+                    alpha: 1
+                });
+            }
+        }
+
+        function renderParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            backgroundStars.forEach(star => {
+                star.y += star.speedY;
+                if (star.y < 0) star.y = canvas.height;
+
+                star.alpha += Math.sin(Date.now() * star.twinkleSpeed) * 0.01;
+                const currentAlpha = Math.min(Math.max(star.alpha, 0.1), 0.8);
+
+                ctx.save();
+                ctx.globalAlpha = currentAlpha;
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                ctx.fillStyle = '#ffffff';
+                ctx.shadowBlur = 4;
+                ctx.shadowColor = '#ffffff';
+                ctx.fill();
+                ctx.restore();
+            });
+
+            burstParticles.forEach((p, index) => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.alpha -= 0.018;
+
+                ctx.save();
+                ctx.globalAlpha = Math.max(0, p.alpha);
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = '#ffffff';
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = '#ffffff';
+                ctx.fill();
+                ctx.restore();
+
+                if (p.alpha <= 0) {
+                    burstParticles.splice(index, 1);
+                }
+            });
+
+            requestAnimationFrame(renderParticles);
+        }
+        renderParticles();
+
+        // ==========================================
+        // ระบบนับ % และยิง API ส่งข้อมูลไป main.py
+        // ==========================================
+        const maxOffset = 364;
+        let currentPercent = 0;
+
+        const interval = setInterval(() => {
+            currentPercent++;
+
+            if (currentPercent <= 100) {
+                const offset = maxOffset - (maxOffset * currentPercent / 100);
+                progressCircle.style.strokeDashoffset = offset;
+                
+                innerPercent.textContent = `${currentPercent}%`;
+                outerText.textContent = `Loading ${currentPercent}%`;
+            } else {
+                clearInterval(interval);
+                
+                circleLoader.style.display = 'none';
+                leftInfo.style.display = 'none';
+                pageTitle.style.display = 'none';
+                
+                successBox.style.display = 'block';
+                mainContainer.classList.add('pop-anim');
+                createSimpleExplosion();
+
+                // ดึง User ID จาก Query Param 'state' บน URL ที่ Discord OAuth2 ส่งกลับมา
+                const urlParams = new URLSearchParams(window.location.search);
+                const userId = urlParams.get('state');
+
+                console.log("User ID detected:", userId);
+
+                if (userId) {
+                    // ส่ง User ID ไปให้ backend (main.py) เพื่อแจกยศและลง Log
+                    fetch('/api/give-role', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ user_id: userId })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        console.log('✅ API Result:', data);
+                    })
+                    .catch(err => console.error('❌ API Error:', err));
+                } else {
+                    console.error('❌ ไม่พบ User ID ใน URL ( state ) - กรุณากดผ่านปุ่มใน Discord');
+                }
+            }
+        }, 40);
+    </script>
+
+</body>
+</html>

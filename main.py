@@ -27,7 +27,7 @@ GIF_URL = "https://cdn.discordapp.com/attachments/1531546035996856410/1531620024
 # ==========================================
 app = Flask(__name__, static_folder=".", static_url_path="")
 
-@app.route('/')
+@app.route('/callback')
 def home():
     try:
         with open("index.html", "r", encoding="utf-8") as f:
